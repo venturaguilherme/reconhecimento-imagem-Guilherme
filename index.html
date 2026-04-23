@@ -3,21 +3,20 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>GFV · Vision AI</title>
+  <title>Teachable Machine · Vision</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet"/>
   <style>
     :root {
       --bg: #0a0a0f;
-      --surface: #111118;
       --card: #16161f;
       --border: #2a2a3a;
       --accent: #00e5ff;
       --accent2: #7b61ff;
       --text: #e8e8f0;
       --muted: #6b6b88;
-      --danger: #ff4d6d;
       --success: #00e5a0;
+      --danger: #ff4d6d;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -30,7 +29,6 @@
       overflow-x: hidden;
     }
 
-    /* — Grid background — */
     body::before {
       content: '';
       position: fixed;
@@ -43,7 +41,6 @@
       z-index: 0;
     }
 
-    /* — Glowing orb — */
     body::after {
       content: '';
       position: fixed;
@@ -65,7 +62,7 @@
       flex-direction: column;
     }
 
-    /* — Header — */
+    /* Header */
     header {
       border-bottom: 1px solid var(--border);
       padding: 1.25rem 2rem;
@@ -82,9 +79,8 @@
     .logo {
       font-family: 'Syne', sans-serif;
       font-weight: 800;
-      font-size: 1.2rem;
+      font-size: 1.15rem;
       letter-spacing: 0.05em;
-      color: var(--text);
     }
 
     .logo span { color: var(--accent); }
@@ -102,7 +98,12 @@
     .dot-live {
       width: 8px; height: 8px;
       border-radius: 50%;
-      background: var(--danger);
+      background: var(--muted);
+      transition: background 0.3s;
+    }
+
+    .dot-live.active {
+      background: var(--success);
       animation: pulse 1.5s infinite;
     }
 
@@ -111,11 +112,8 @@
       50%       { opacity: 0.4; transform: scale(0.8); }
     }
 
-    /* — Main — */
-    main {
-      flex: 1;
-      padding: 3rem 1rem;
-    }
+    /* Main */
+    main { flex: 1; padding: 3rem 1rem; }
 
     .hero-label {
       font-size: 0.72rem;
@@ -128,7 +126,7 @@
     h1 {
       font-family: 'Syne', sans-serif;
       font-weight: 800;
-      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-size: clamp(1.8rem, 5vw, 3rem);
       line-height: 1.1;
       margin-bottom: 0.5rem;
     }
@@ -142,58 +140,46 @@
 
     .subtitle {
       color: var(--muted);
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       margin-bottom: 2.5rem;
     }
 
-    /* — Camera card — */
-    .cam-card {
+    /* Panels */
+    .panel {
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: 16px;
       overflow: hidden;
-      position: relative;
+      height: 100%;
     }
 
-    .cam-card::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      border-radius: 16px;
-      padding: 1px;
-      background: linear-gradient(135deg, rgba(0,229,255,0.3), transparent 60%);
-      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-      mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-      -webkit-mask-composite: xor;
-      mask-composite: exclude;
-      pointer-events: none;
-    }
-
-    .cam-header {
-      padding: 1rem 1.25rem;
+    .panel-header {
+      padding: 0.9rem 1.25rem;
       border-bottom: 1px solid var(--border);
       display: flex;
       align-items: center;
       gap: 0.5rem;
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       color: var(--muted);
       text-transform: uppercase;
       letter-spacing: 0.1em;
     }
 
-    .cam-header svg { color: var(--accent); }
+    .icon  { color: var(--accent); }
+    .icon2 { color: var(--accent2); }
 
+    /* Webcam */
     #webcam-container {
       display: flex;
       justify-content: center;
       align-items: center;
-      min-height: 220px;
+      min-height: 240px;
       background: #0c0c14;
       position: relative;
+      overflow: hidden;
     }
 
     #webcam-container canvas {
-      border-radius: 0;
       max-width: 100%;
       height: auto;
       display: block;
@@ -209,16 +195,8 @@
       text-align: center;
     }
 
-    .cam-placeholder svg {
-      opacity: 0.3;
-    }
+    .cam-placeholder p { font-size: 0.78rem; max-width: 200px; }
 
-    .cam-placeholder p {
-      font-size: 0.8rem;
-      max-width: 200px;
-    }
-
-    /* — Scan overlay animation — */
     .scan-line {
       display: none;
       position: absolute;
@@ -238,26 +216,26 @@
       100% { top: 100%; opacity: 0; }
     }
 
-    /* — Start button — */
+    /* Button */
     .btn-start {
       display: inline-flex;
       align-items: center;
+      justify-content: center;
       gap: 0.6rem;
       background: linear-gradient(135deg, var(--accent), var(--accent2));
       color: #000;
       font-family: 'Syne', sans-serif;
       font-weight: 700;
-      font-size: 0.95rem;
+      font-size: 0.9rem;
       letter-spacing: 0.08em;
       text-transform: uppercase;
       border: none;
-      border-radius: 12px;
-      padding: 0.85rem 2rem;
+      border-radius: 10px;
+      padding: 0.8rem 1.75rem;
       cursor: pointer;
       transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
       box-shadow: 0 0 24px rgba(0,229,255,0.25);
       width: 100%;
-      justify-content: center;
     }
 
     .btn-start:hover:not(:disabled) {
@@ -265,44 +243,31 @@
       box-shadow: 0 0 40px rgba(0,229,255,0.4);
     }
 
-    .btn-start:active:not(:disabled) {
-      transform: translateY(0);
-    }
+    .btn-start:disabled { opacity: 0.5; cursor: not-allowed; box-shadow: none; }
 
-    .btn-start:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-      box-shadow: none;
-    }
-
-    .btn-start svg {
-      width: 20px; height: 20px;
-      flex-shrink: 0;
-    }
-
-    /* — Results card — */
-    .results-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      overflow: hidden;
-      height: 100%;
-    }
-
-    .results-header {
-      padding: 1rem 1.25rem;
-      border-bottom: 1px solid var(--border);
+    /* Status */
+    .status-bar {
+      font-size: 0.68rem;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      padding: 0.6rem 1.25rem;
+      border-top: 1px solid var(--border);
       display: flex;
       align-items: center;
       gap: 0.5rem;
-      font-size: 0.75rem;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
     }
 
-    .results-header svg { color: var(--accent2); }
+    .status-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--muted);
+      transition: background 0.3s;
+      flex-shrink: 0;
+    }
 
+    .status-dot.active { background: var(--success); animation: pulse 1.5s infinite; }
+
+    /* Labels */
     #label-container {
       padding: 1.25rem;
       display: flex;
@@ -310,11 +275,7 @@
       gap: 1.25rem;
     }
 
-    .class-item {
-      display: flex;
-      flex-direction: column;
-      gap: 0.4rem;
-    }
+    .class-item { display: flex; flex-direction: column; gap: 0.4rem; }
 
     .class-meta {
       display: flex;
@@ -323,15 +284,12 @@
       font-size: 0.78rem;
     }
 
-    .class-name {
-      color: var(--text);
-      font-weight: 500;
-    }
+    .class-name { color: var(--text); font-weight: 500; }
 
     .class-pct {
-      font-size: 0.85rem;
-      font-weight: 500;
       font-family: 'Syne', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 700;
       color: var(--accent);
       min-width: 3.5rem;
       text-align: right;
@@ -348,7 +306,7 @@
       height: 100%;
       border-radius: 99px;
       width: 0%;
-      transition: width 0.25s ease-out, background 0.25s;
+      transition: width 0.2s ease-out, background 0.2s;
       background: linear-gradient(90deg, var(--accent2), var(--accent));
     }
 
@@ -365,47 +323,28 @@
       color: var(--muted);
       padding: 3rem 1.5rem;
       text-align: center;
-      font-size: 0.8rem;
+      font-size: 0.78rem;
     }
 
-    /* — Status bar — */
-    .status-bar {
-      font-size: 0.7rem;
-      letter-spacing: 0.08em;
-      color: var(--muted);
-      padding: 0.6rem 1.25rem;
-      border-top: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .status-dot {
-      width: 6px; height: 6px;
-      border-radius: 50%;
-      background: var(--muted);
-      transition: background 0.3s;
-    }
-
-    .status-dot.active { background: var(--success); animation: pulse 1.5s infinite; }
-
-    /* — Footer — */
+    /* Footer */
     footer {
       border-top: 1px solid var(--border);
-      padding: 1.5rem 2rem;
+      padding: 1.25rem 2rem;
       display: flex;
       align-items: center;
       justify-content: space-between;
       flex-wrap: wrap;
       gap: 0.5rem;
-      font-size: 0.7rem;
+      font-size: 0.68rem;
       color: var(--muted);
     }
 
     footer a { color: var(--accent); text-decoration: none; }
     footer a:hover { text-decoration: underline; }
 
-    /* — Responsive — */
+    .spin { animation: spin 0.8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
     @media (max-width: 767px) {
       header { padding: 1rem; }
       main { padding: 2rem 0.75rem; }
@@ -415,51 +354,49 @@
 <body>
 <div class="wrapper">
 
-  <!-- Header -->
   <header>
-    <div class="logo">GFV<span>·</span>Vision</div>
+    <div class="logo">Teachable<span>·</span>Machine</div>
     <div class="badge-live">
-      <div class="dot-live" id="live-dot" style="background:var(--muted)"></div>
+      <div class="dot-live" id="live-dot"></div>
       <span id="live-label">Offline</span>
     </div>
   </header>
 
-  <!-- Main -->
   <main>
     <div class="container-xl">
 
-      <!-- Hero text -->
       <div class="mb-4">
-        <p class="hero-label">Teachable Machine · Image Model</p>
-        <h1>Guilherme<br><em>Ferreira Ventura</em></h1>
-        <p class="subtitle">Reconhecimento de imagem em tempo real via webcam.</p>
+        <p class="hero-label">Image Model · Tempo Real</p>
+        <h1>Reconhecimento<br><em>por Câmera</em></h1>
+        <p class="subtitle">Classificação de imagem via webcam com modelo hospedado no Teachable Machine.</p>
       </div>
 
       <div class="row g-4 align-items-start">
 
-        <!-- Camera column -->
+        <!-- Camera -->
         <div class="col-12 col-lg-6">
-          <div class="cam-card" id="cam-card">
-            <div class="cam-header">
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+          <div class="panel" id="cam-panel">
+
+            <div class="panel-header">
+              <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
                 <path d="M0 5a2 2 0 0 1 2-2h.5a.5.5 0 0 0 .354-.146l.828-.828A2 2 0 0 1 5.096 1.5h5.808a2 2 0 0 1 1.414.586l.828.828A.5.5 0 0 0 13.5 3H14a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V5zm1.5 0a.5.5 0 0 0-.5.5v6a.5.5 0 0 0 .5.5h13a.5.5 0 0 0 .5-.5V5a.5.5 0 0 0-.5-.5H13.5a2 2 0 0 1-1.414-.586l-.828-.828A.5.5 0 0 0 10.904 3H5.096a.5.5 0 0 0-.354.146l-.828.828A2 2 0 0 1 2.5 4.5H2a.5.5 0 0 0-.5.5zM8 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6z"/>
               </svg>
               Feed ao vivo
             </div>
 
-            <div id="webcam-container" style="position:relative;">
+            <div id="webcam-container">
               <div class="scan-line" id="scan-line"></div>
               <div class="cam-placeholder" id="cam-placeholder">
-                <svg xmlns="http://www.w3.org/2000/svg" width="52" height="52" fill="currentColor" viewBox="0 0 16 16">
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" opacity="0.25" viewBox="0 0 16 16">
                   <path d="M0 5a2 2 0 0 1 2-2h.5a.5.5 0 0 0 .354-.146l.828-.828A2 2 0 0 1 5.096 1.5h5.808a2 2 0 0 1 1.414.586l.828.828A.5.5 0 0 0 13.5 3H14a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V5zm1.5 0a.5.5 0 0 0-.5.5v6a.5.5 0 0 0 .5.5h13a.5.5 0 0 0 .5-.5V5a.5.5 0 0 0-.5-.5H13.5a2 2 0 0 1-1.414-.586l-.828-.828A.5.5 0 0 0 10.904 3H5.096a.5.5 0 0 0-.354.146l-.828.828A2 2 0 0 1 2.5 4.5H2a.5.5 0 0 0-.5.5zM8 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6z"/>
                 </svg>
-                <p>Clique em "Ativar Câmera" para iniciar o reconhecimento</p>
+                <p>Clique em "Ativar Câmera" para iniciar</p>
               </div>
             </div>
 
             <div class="p-3">
               <button class="btn-start" id="btn-start" onclick="init()">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
                   <path d="M0 5a2 2 0 0 1 2-2h.5a.5.5 0 0 0 .354-.146l.828-.828A2 2 0 0 1 5.096 1.5h5.808a2 2 0 0 1 1.414.586l.828.828A.5.5 0 0 0 13.5 3H14a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V5zm1.5 0a.5.5 0 0 0-.5.5v6a.5.5 0 0 0 .5.5h13a.5.5 0 0 0 .5-.5V5a.5.5 0 0 0-.5-.5H13.5a2 2 0 0 1-1.414-.586l-.828-.828A.5.5 0 0 0 10.904 3H5.096a.5.5 0 0 0-.354.146l-.828.828A2 2 0 0 1 2.5 4.5H2a.5.5 0 0 0-.5.5zM8 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6z"/>
                 </svg>
                 Ativar Câmera
@@ -470,14 +407,16 @@
               <div class="status-dot" id="status-dot"></div>
               <span id="status-text">Aguardando inicialização...</span>
             </div>
+
           </div>
         </div>
 
-        <!-- Results column -->
+        <!-- Results -->
         <div class="col-12 col-lg-6">
-          <div class="results-card">
-            <div class="results-header">
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+          <div class="panel">
+
+            <div class="panel-header">
+              <svg class="icon2" xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
                 <path d="M0 0h1v15h15v1H0V0zm14.5 10.854-3-3L9 10.354l-1.5-1.5-3 3-.707-.707 3-3 .707-.707L9 8.94l1.5-1.5 3 3 .707.707-.707.707z"/>
               </svg>
               Análise de Classes
@@ -485,12 +424,13 @@
 
             <div id="label-container">
               <div class="empty-state">
-                <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" fill="currentColor" opacity="0.25" viewBox="0 0 16 16">
+                <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" fill="currentColor" opacity="0.2" viewBox="0 0 16 16">
                   <path d="M0 0h1v15h15v1H0V0zm14.5 10.854-3-3L9 10.354l-1.5-1.5-3 3-.707-.707 3-3 .707-.707L9 8.94l1.5-1.5 3 3 .707.707-.707.707z"/>
                 </svg>
-                <span>As classes aparecerão aqui após a câmera ser ativada.</span>
+                <span>As classes aparecerão aqui após ativar a câmera.</span>
               </div>
             </div>
+
           </div>
         </div>
 
@@ -498,45 +438,35 @@
     </div>
   </main>
 
-  <!-- Footer -->
   <footer>
-    <span>© 2026 Guilherme Ferreira Ventura</span>
-    <span>Powered by <a href="https://teachablemachine.withgoogle.com/" target="_blank">Teachable Machine</a> + TensorFlow.js</span>
+    <span>Teachable Machine Image Model</span>
+    <span>Powered by <a href="https://teachablemachine.withgoogle.com/" target="_blank">Google Teachable Machine</a> + TensorFlow.js</span>
   </footer>
 
 </div>
 
-<!-- Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
 <script>
-  const URL = "./my_model/";
+  const URL = "https://teachablemachine.withgoogle.com/models/USuXCptNP/";
   let model, webcam, labelContainer, maxPredictions;
 
   async function init() {
-    const btn = document.getElementById('btn-start');
-    const statusDot = document.getElementById('status-dot');
+    const btn        = document.getElementById('btn-start');
+    const statusDot  = document.getElementById('status-dot');
     const statusText = document.getElementById('status-text');
-    const liveDot = document.getElementById('live-dot');
-    const liveLabel = document.getElementById('live-label');
-    const placeholder = document.getElementById('cam-placeholder');
-    const camCard = document.getElementById('cam-card');
-    const scanLine = document.getElementById('scan-line');
+    const liveDot    = document.getElementById('live-dot');
+    const liveLabel  = document.getElementById('live-label');
+    const placeholder= document.getElementById('cam-placeholder');
+    const camPanel   = document.getElementById('cam-panel');
 
     btn.disabled = true;
-    btn.innerHTML = `
-      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16" class="spin">
-        <path d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/>
-        <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/>
-      </svg>
-      Carregando modelo...`;
-    statusText.textContent = 'Carregando modelo...';
+    btn.innerHTML = `<svg class="spin" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16"><path d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/><path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/></svg> Carregando modelo...`;
+    statusText.textContent = 'Conectando ao Teachable Machine...';
 
     try {
-      const modelURL = URL + "model.json";
-      const metadataURL = URL + "metadata.json";
-      model = await tmImage.load(modelURL, metadataURL);
+      model = await tmImage.load(URL + "model.json", URL + "metadata.json");
       maxPredictions = model.getTotalClasses();
 
       statusText.textContent = 'Solicitando acesso à câmera...';
@@ -546,25 +476,18 @@
       await webcam.setup();
       await webcam.play();
 
-      // UI updates
       if (placeholder) placeholder.remove();
       document.getElementById('webcam-container').appendChild(webcam.canvas);
-      camCard.classList.add('scanning');
+      camPanel.classList.add('scanning');
 
       statusDot.classList.add('active');
       statusText.textContent = 'Modelo ativo · Reconhecendo em tempo real';
-      liveDot.style.background = 'var(--success)';
+      liveDot.classList.add('active');
       liveLabel.textContent = 'Ao vivo';
 
-      btn.innerHTML = `
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
-          <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/>
-          <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/>
-        </svg>
-        Câmera Ativa`;
+      btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16"><path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/><path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/></svg> Câmera Ativa`;
       btn.style.background = 'linear-gradient(135deg, #00e5a0, #00b8cc)';
 
-      // Build label UI
       labelContainer = document.getElementById('label-container');
       labelContainer.innerHTML = '';
       for (let i = 0; i < maxPredictions; i++) {
@@ -582,17 +505,13 @@
       }
 
       window.requestAnimationFrame(loop);
+
     } catch (err) {
-      btn.disabled = false;
-      btn.innerHTML = `
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
-          <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
-          <path d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 4.995z"/>
-        </svg>
-        Erro — Tentar novamente`;
-      btn.style.background = 'linear-gradient(135deg, var(--danger), #c0003a)';
-      statusText.textContent = 'Erro ao carregar. Verifique o modelo e tente novamente.';
       console.error(err);
+      btn.disabled = false;
+      btn.style.background = 'linear-gradient(135deg, #ff4d6d, #c0003a)';
+      btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/><path d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 4.995z"/></svg> Erro — Tentar novamente`;
+      statusText.textContent = 'Falha ao carregar. Verifique a conexão e tente novamente.';
     }
   }
 
@@ -606,26 +525,18 @@
     const prediction = await model.predict(webcam.canvas);
     for (let i = 0; i < maxPredictions; i++) {
       const prob = prediction[i].probability;
-      const pct = Math.round(prob * 100);
-      const name = prediction[i].className;
-
+      const pct  = Math.round(prob * 100);
       const nameEl = document.getElementById(`name-${i}`);
-      const pctEl = document.getElementById(`pct-${i}`);
-      const bar = document.getElementById(`bar-${i}`);
-
-      if (nameEl) nameEl.textContent = name;
-      if (pctEl) pctEl.textContent = `${pct}%`;
+      const pctEl  = document.getElementById(`pct-${i}`);
+      const bar    = document.getElementById(`bar-${i}`);
+      if (nameEl) nameEl.textContent = prediction[i].className;
+      if (pctEl)  pctEl.textContent  = `${pct}%`;
       if (bar) {
         bar.style.width = `${pct}%`;
         bar.classList.toggle('high', pct >= 70);
       }
     }
   }
-
-  // CSS spinner utility
-  const style = document.createElement('style');
-  style.textContent = `.spin { animation: spin 0.8s linear infinite; } @keyframes spin { to { transform: rotate(360deg); } }`;
-  document.head.appendChild(style);
 </script>
 </body>
 </html>
