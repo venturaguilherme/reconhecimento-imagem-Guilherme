@@ -1,15 +1,14 @@
 def is_prime(n: int) -> bool:
-    """
-    Verifica se um número inteiro é primo.
+    """Verifica se um número inteiro é primo.
 
     Um número primo é um inteiro maior que 1 que possui apenas dois divisores
     positivos distintos: 1 e ele mesmo.
 
     Args:
-        n (int): O número inteiro a ser verificado. Deve ser um inteiro não negativo.
+        n: O número inteiro a ser verificado. Deve ser um inteiro não negativo.
 
     Returns:
-        bool: True se o número for primo, False caso contrário.
+        True se o número for primo, False caso contrário.
 
     Raises:
         TypeError: Se n não for um inteiro.
